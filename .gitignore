@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+agent.md
+skill.md
+
+jest.config.ts
+jest.setup.ts
