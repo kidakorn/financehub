@@ -113,15 +113,26 @@ function DashboardList({
 
   /* Confirm dialog state */
   const [confirm, setConfirm] = useState<{ open: boolean; carId: string | null }>({ open: false, carId: null });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const openDelete = (id: string) => setConfirm({ open: true, carId: id });
-  const closeDelete = () => setConfirm({ open: false, carId: null });
+  const closeDelete = () => {
+    if (isDeleting) return;
+    setConfirm({ open: false, carId: null });
+  };
+  
   const handleConfirmDelete = () => {
     if (confirm.carId) {
-      deleteCar(confirm.carId);
-      toast(dict.toastDeleted, 'info');
+      setIsDeleting(true);
+      setTimeout(() => {
+        deleteCar(confirm.carId!);
+        toast(dict.toastDeleted, 'info');
+        setIsDeleting(false);
+        setConfirm({ open: false, carId: null });
+      }, 600);
+    } else {
+      closeDelete();
     }
-    closeDelete();
   };
 
   const handleExport = () => {
@@ -340,6 +351,7 @@ function DashboardList({
         confirmLabel={isTh ? 'ลบ' : 'Delete'}
         cancelLabel={isTh ? 'ยกเลิก' : 'Cancel'}
         variant="danger"
+        isLoading={isDeleting}
         onConfirm={handleConfirmDelete}
         onCancel={closeDelete}
       />

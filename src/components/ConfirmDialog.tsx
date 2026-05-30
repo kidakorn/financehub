@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 
 interface ConfirmDialogProps {
@@ -10,6 +11,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?:  string;
   variant?:   'danger' | 'warning' | 'info';
+  isLoading?: boolean;
   onConfirm:  () => void;
   onCancel:   () => void;
 }
@@ -27,11 +29,15 @@ export function ConfirmDialog({
   confirmLabel = 'Confirm',
   cancelLabel  = 'Cancel',
   variant      = 'danger',
+  isLoading    = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const v = VARIANT_STYLES[variant];
+
+  useEffect(() => setMounted(true), []);
 
   // Animate in/out
   useEffect(() => {
@@ -52,9 +58,10 @@ export function ConfirmDialog({
     return () => document.removeEventListener('keydown', handler);
   }, [open, onCancel]);
 
+  if (!mounted) return null;
   if (!open && !visible) return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -100,6 +107,7 @@ export function ConfirmDialog({
             variant="outline"
             className="flex-1"
             onClick={onCancel}
+            disabled={isLoading}
           >
             {cancelLabel}
           </Button>
@@ -107,11 +115,19 @@ export function ConfirmDialog({
             variant={v.btn === 'destructive' ? 'destructive' : 'default'}
             className={`flex-1 ${variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white border-0' : ''}`}
             onClick={onConfirm}
+            disabled={isLoading}
           >
+            {isLoading && (
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
             {confirmLabel}
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
