@@ -12,6 +12,7 @@ import { generateId, addMonths } from '@/lib/formatters';
 export function buildCar(input: CarFormInput): Car | null {
   const price       = parseFloat(input.price);
   const downPayment = parseFloat(input.downPayment) || 0;
+  const ppi         = parseFloat(input.ppi) || 0;
   const annualRate  = parseFloat(input.annualRate);
   const termMonths  = parseInt(input.termMonths, 10);
   const startDate   = input.startDate || new Date().toISOString().split('T')[0];
@@ -20,6 +21,7 @@ export function buildCar(input: CarFormInput): Car | null {
   if (
     isNaN(price)      || price <= 0 ||
     isNaN(annualRate) || annualRate < 0 ||
+    isNaN(ppi)        || ppi < 0 ||
     isNaN(termMonths) || termMonths < 1 || termMonths > 360 ||
     downPayment < 0   || downPayment >= price
   ) {
@@ -30,7 +32,8 @@ export function buildCar(input: CarFormInput): Car | null {
   const years         = termMonths / 12;
   const totalInterest = principal * (annualRate / 100) * years;
   const monthlyExcVAT = (principal + totalInterest) / termMonths;
-  const monthlyAmt    = monthlyExcVAT * 1.07;
+  const monthlyIncVAT = input.includeVat ? monthlyExcVAT * 1.07 : monthlyExcVAT;
+  const monthlyAmt    = monthlyIncVAT + ppi;
   const totalWithVAT  = monthlyAmt * termMonths;
 
   const carId    = generateId();
@@ -43,13 +46,17 @@ export function buildCar(input: CarFormInput): Car | null {
     price,
     downPayment,
     principal,
+    ppi,
     annualRate,
     termMonths,
     startDate,
+    monthlyExcVAT,
+    monthlyIncVAT,
     monthlyAmt,
     totalInterest,
     totalWithVAT,
     createdAt:    new Date().toISOString(),
+    includeVat:   input.includeVat ?? true,
     schedule,
   };
 }

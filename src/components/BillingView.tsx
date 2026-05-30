@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useTogglePaid } from '@/store/useAppStore';
+import { useToast } from '@/components/Toast';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface BillingViewProps {
@@ -29,9 +30,19 @@ type FilterKey   = 'all' | 'paid' | 'pending';
 
 export default function BillingView({ car, lang, dict, onBack }: BillingViewProps) {
   const togglePaid  = useTogglePaid();
+  const { toast }   = useToast();
   const [page, setPage]         = useState(1);
   const [filter, setFilter]     = useState<FilterKey>('all');
   const stats = getCarStats(car);
+
+  const handleToggle = (instId: string, currentPaid: boolean) => {
+    togglePaid(car.id, instId);
+    toast(
+      currentPaid ? dict.toastPaidOff : dict.toastPaidOn,
+      currentPaid ? 'info' : 'success',
+      2500,
+    );
+  };
 
   const filtered = useMemo(() => {
     if (filter === 'all')     return car.schedule;
@@ -100,27 +111,57 @@ export default function BillingView({ car, lang, dict, onBack }: BillingViewProp
         </div>
       </div>
 
-      {/* Summary bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: dict.statMonthly,      value: `฿${formatTHB(car.monthlyAmt)}`,      red: true },
-          { label: dict.summaryPrincipal, value: `฿${formatTHB(car.principal)}`,       red: false },
-          { label: dict.summaryInterest,  value: `฿${formatTHB(car.totalInterest)}`,   red: false },
-          { label: dict.summaryTotalVAT,  value: `฿${formatTHB(car.totalWithVAT)}`,    red: false },
-        ].map(({ label, value, red }, i) => (
-          <div
-            key={label}
-            className={`rounded-2xl px-5 py-4 border shadow-sm ${red ? 'bg-red-50 border-red-100' : 'bg-white border-gray-200'}`}
-            style={{ animationDelay: `${i * 0.05}s` }}
-          >
-            <p className="text-[10px] font-semibold mb-1 uppercase tracking-widest" style={{ color: red ? '#dc2626' : 'var(--color-text-2)' }}>
-              {label}
-            </p>
-            <p className="text-lg font-bold tabular-nums" style={{ color: red ? '#dc2626' : 'var(--color-text-1)' }}>
-              {value}
-            </p>
+      {/* Detailed Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Section 1: Loan Details */}
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
+          <h3 className="text-sm font-semibold mb-3 text-gray-900 border-b border-gray-100 pb-2">
+            {lang === 'th' ? 'รายละเอียดสินเชื่อ' : 'Loan Details'}
+          </h3>
+          <div className="space-y-2.5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailLoanAmount}</span>
+              <span className="font-semibold text-gray-900">฿{formatTHB(car.principal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailRepayment}</span>
+              <span className="font-semibold text-gray-900">{car.termMonths} {dict.summaryTerm}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailInterest}</span>
+              <span className="font-semibold text-gray-900">{car.annualRate}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailStartDate}</span>
+              <span className="font-semibold text-gray-900">{formatDate(car.startDate, lang)}</span>
+            </div>
           </div>
-        ))}
+        </div>
+
+        {/* Section 2: Monthly Payment Details */}
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
+          <h3 className="text-sm font-semibold mb-3 text-gray-900 border-b border-gray-100 pb-2">
+            {lang === 'th' ? 'รายละเอียดการผ่อนชำระต่อเดือน' : 'Monthly Payment Details'}
+          </h3>
+          <div className="space-y-2.5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailMonthlyExcVAT}</span>
+              <span className="font-semibold text-gray-900">฿{formatTHB(car.monthlyExcVAT)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailMonthlyIncVAT}</span>
+              <span className="font-semibold text-gray-900">฿{formatTHB(car.monthlyIncVAT)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{dict.detailPPI}</span>
+              <span className="font-semibold text-gray-900">฿{formatTHB(car.ppi)}</span>
+            </div>
+            <div className="flex justify-between border-t border-gray-100 pt-2.5 mt-2.5">
+              <span className="text-gray-700 font-bold">{dict.detailMonthlyTotal}</span>
+              <span className="font-bold text-blue-600 text-base">฿{formatTHB(car.monthlyAmt)}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Payment list panel */}
@@ -218,7 +259,7 @@ export default function BillingView({ car, lang, dict, onBack }: BillingViewProp
                   {/* Toggle */}
                   <button
                     id={`btn-toggle-mobile-${inst.id}`}
-                    onClick={() => togglePaid(car.id, inst.id)}
+                    onClick={() => handleToggle(inst.id, inst.isPaid)}
                     aria-label={inst.isPaid ? `${dict.filterPending} #${inst.no}` : `${dict.filterPaid} #${inst.no}`}
                     className={`flex items-center justify-center w-7 h-7 rounded-md border transition-all ${
                       inst.isPaid 
@@ -260,7 +301,7 @@ export default function BillingView({ car, lang, dict, onBack }: BillingViewProp
                       <TableCell className="text-right">
                         <div className="flex justify-end">
                           <button
-                            onClick={() => togglePaid(car.id, inst.id)}
+                            onClick={() => handleToggle(inst.id, inst.isPaid)}
                             aria-label={`${inst.isPaid ? dict.filterPending : dict.filterPaid} #${inst.no}`}
                             className={`flex items-center justify-center w-7 h-7 rounded-md border transition-all ${
                               inst.isPaid 

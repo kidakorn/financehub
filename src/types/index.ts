@@ -20,13 +20,17 @@ export interface Car {
   price:        number;        // Full car price (THB)
   downPayment:  number;        // Down payment (THB)
   principal:    number;        // price - downPayment
+  ppi:          number;        // Payment Protection Insurance (total amount)
   annualRate:   number;        // Interest rate % per year
   termMonths:   number;        // Loan term in months
   startDate:    string;        // YYYY-MM-DD — first payment reference
-  monthlyAmt:   number;        // Monthly payment incl. VAT
+  monthlyExcVAT:number;        // Monthly before VAT
+  monthlyIncVAT:number;        // Monthly including VAT
+  monthlyAmt:   number;        // Monthly payment incl. VAT + PPI
   totalInterest:number;        // Total interest (exc. VAT)
   totalWithVAT: number;        // Total repayment incl. VAT
   createdAt:    string;        // ISO timestamp
+  includeVat:   boolean;       // Include 7% VAT flag
   schedule:     Installment[]; // Full payment schedule
 }
 
@@ -36,9 +40,11 @@ export interface CarFormInput {
   name:        string;
   price:       string;
   downPayment: string;
+  ppi:         string;
   annualRate:  string;
   termMonths:  string;
   startDate:   string;
+  includeVat:  boolean;
 }
 
 /** Computed stats for a car (derived, not stored) */
@@ -58,7 +64,8 @@ export interface AppState {
 
 /** All reducer actions */
 export type AppAction =
-  | { type: 'ADD_CAR';     payload: Car }
+  | { type: 'ADD_CAR';      payload: Car }
+  | { type: 'UPDATE_CAR';  payload: Car }
   | { type: 'DELETE_CAR';  carId: string }
   | { type: 'TOGGLE_PAID'; carId: string; installmentId: string }
   | { type: 'SET_LANG';    lang: Lang }
@@ -80,7 +87,13 @@ export interface Dictionary {
   btnAddCar:          string;
   btnViewBilling:     string;
   btnDeleteCar:       string;
+  btnEdit:            string;
   confirmDelete:      string;
+  toastAdded:         string;
+  toastUpdated:       string;
+  toastDeleted:       string;
+  toastPaidOn:        string;
+  toastPaidOff:       string;
 
   // Car card stats
   statMonthly:        string;
@@ -102,6 +115,9 @@ export interface Dictionary {
   labelTerm:          string;
   labelStartDate:     string;
   labelTermPresets:   string;
+  labelIncludeVat:    string;
+  labelPPI:           string;
+  placeholderPPI:     string;
   unitMonths:         string;
   btnSave:            string;
   btnCancel:          string;
@@ -136,6 +152,16 @@ export interface Dictionary {
   summaryInclVAT:     string;
   summaryRate:        string;
   summaryTerm:        string;
+
+  // New Details Section
+  detailLoanAmount:   string;
+  detailRepayment:    string;
+  detailInterest:     string;
+  detailMonthlyExcVAT:string;
+  detailMonthlyIncVAT:string;
+  detailPPI:          string;
+  detailMonthlyTotal: string;
+  detailStartDate:    string;
 
   // Footer
   footerCopy:         string;

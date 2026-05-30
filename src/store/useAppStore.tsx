@@ -69,6 +69,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'ADD_CAR':
       return { ...state, cars: [...state.cars, action.payload] };
 
+    case 'UPDATE_CAR':
+      return {
+        ...state,
+        cars: state.cars.map((c) => c.id !== action.payload.id ? c : action.payload),
+      };
+
     case 'DELETE_CAR':
       return { ...state, cars: state.cars.filter((c) => c.id !== action.carId) };
 
@@ -180,6 +186,11 @@ export function useTogglePaid() {
   const { dispatch } = useApp();
   return (carId: string, installmentId: string) =>
     dispatch({ type: 'TOGGLE_PAID', carId, installmentId });
+}
+
+export function useUpdateCar() {
+  const { dispatch } = useApp();
+  return (car: Car) => dispatch({ type: 'UPDATE_CAR', payload: car });
 }
 
 export function useSetLang() {
