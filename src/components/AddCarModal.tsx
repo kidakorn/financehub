@@ -170,15 +170,23 @@ export default function AddCarModal({
                   key={type}
                   type="button"
                   onClick={() => setForm(f => ({ ...f, vehicleType: type }))}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
                     form.vehicleType === type
                       ? 'bg-white shadow-sm text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
+                  {type === 'car' ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 15l2-8h10l2 8v4h-2v-2H7v2H5v-4zm2-6-1 4h12l-1-4H7zm2 6a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/>
+                      <path d="M15 6a3.5 3.5 0 1 0-7 0"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+                    </svg>
+                  )}
                   {type === 'car'
-                    ? (isTh ? '🚗 รถยนต์' : '🚗 Car')
-                    : (isTh ? '🏍️ มอเตอร์ไซค์' : '🏍️ Motorcycle')}
+                    ? (isTh ? 'รถยนต์' : 'Car')
+                    : (isTh ? 'มอเตอร์ไซค์' : 'Motorcycle')}
                 </button>
               ))}
             </div>

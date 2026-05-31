@@ -18,27 +18,33 @@ const mockCar1 = buildCar({
   name: 'Tesla Model 3',
   price: '1800000',
   downPayment: '300000',
+  ppi: '0',
   annualRate: '2.5',
   termMonths: '48',
-  startDate: new Date().toISOString().split('T')[0]
+  startDate: new Date().toISOString().split('T')[0],
+  includeVat: true,
 });
 const mockCar2 = buildCar({
   vehicleType: 'car',
   name: 'Honda Civic RS',
   price: '1200000',
   downPayment: '200000',
+  ppi: '0',
   annualRate: '3.0',
   termMonths: '60',
-  startDate: new Date().toISOString().split('T')[0]
+  startDate: new Date().toISOString().split('T')[0],
+  includeVat: true,
 });
 const mockMoto = buildCar({
   vehicleType: 'motorcycle',
   name: 'Yamaha XMAX 300',
   price: '189900',
   downPayment: '0',
+  ppi: '0',
   annualRate: '4.5',
   termMonths: '36',
-  startDate: new Date().toISOString().split('T')[0]
+  startDate: new Date().toISOString().split('T')[0],
+  includeVat: true,
 });
 
 // mark some installments as paid

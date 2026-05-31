@@ -8,6 +8,7 @@ import {
   useRef,
   useEffect,
   type ReactNode,
+  type ReactElement,
 } from 'react';
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
@@ -60,7 +61,7 @@ export function useToast() {
 
 /* ─── Individual Toast Item ─────────────────────────────────────────────────── */
 
-const ICONS: Record<ToastVariant, JSX.Element> = {
+const ICONS: Record<ToastVariant, ReactElement> = {
   success: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
       <circle cx="8" cy="8" r="7" fill="currentColor" opacity=".15"/>
