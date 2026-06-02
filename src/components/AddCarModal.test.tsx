@@ -25,7 +25,7 @@ const mockDict = {
 
 describe('AddCarModal CSS (Tailwind)', () => {
   it('should apply the correct tailwind utility classes for the active vehicle type tab', () => {
-    render(<AddCarModal isOpen={true} onClose={() => {}} dict={mockDict} />);
+    render(<AddCarModal isOpen={true} onClose={() => {}} dict={mockDict} lang="th" />);
 
     // By default, 'Car' is active
     const carTab = screen.getByText('Car');
@@ -52,7 +52,7 @@ describe('AddCarModal CSS (Tailwind)', () => {
   });
 
   it('should apply the error class when form is submitted with invalid data', () => {
-    render(<AddCarModal isOpen={true} onClose={() => {}} dict={mockDict} />);
+    render(<AddCarModal isOpen={true} onClose={() => {}} dict={mockDict} lang="th" />);
 
     // Submit the form immediately (it's empty, so it's invalid)
     const saveBtn = screen.getByText('Save');

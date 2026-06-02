@@ -58,8 +58,9 @@ export interface CarStats {
 
 /** Global app state */
 export interface AppState {
-  cars:   Car[];
-  lang:   Lang;
+  cars:     Car[];
+  lang:     Lang;
+  userName: string | null;
 }
 
 /** All reducer actions */
@@ -81,6 +82,13 @@ export interface Dictionary {
   // Dashboard
   dashboardTitle:     string;
   dashboardDesc:      string;
+  navDashboard:       string;
+  navPayments:        string;
+  navFleet:           string;
+  navReports:         string;
+  roleFleetManager:   string;
+  exportCSV:          string;
+  toastExported:      string;
   noCarsTitle:        string;
   noCarsDesc:         string;
   addFirstCar:        string;
@@ -103,6 +111,11 @@ export interface Dictionary {
   statTotalPaid:      string;
   statRemainingAmt:   string;
   unitInstallments:   string;
+  widgetTotalDebt:    string;
+  widgetMonthlyOutflow: string;
+  widgetTotalVehicles: string;
+  unitVehicles:       string;
+  unitVehicle:        string;
 
   // Add car modal
   modalTitleAdd:      string;
@@ -132,6 +145,12 @@ export interface Dictionary {
   colAmount:          string;
   colStatus:          string;
   colMark:            string;
+  colVehicle:         string;
+  colType:            string;
+  colMonthly:         string;
+  colEndDate:         string;
+  colTotalPaid:       string;
+  colActions:         string;
   badgePaid:          string;
   badgePending:       string;
   filterAll:          string;
@@ -142,6 +161,25 @@ export interface Dictionary {
   paginationInfo:     string;
   btnPrev:            string;
   btnNext:            string;
+
+  // Overview Tab
+  overviewTitle:      string;
+  overviewDesc:       string;
+  nextPaymentDue:     string;
+  upcomingBills:      string;
+  projectedPayments:  string;
+  noUpcomingBills:    string;
+
+  // Payments Tab
+  unifiedPaymentsTitle: string;
+  unifiedPaymentsDesc:  string;
+
+  // Reports Tab
+  reportsTitle:       string;
+  reportsDesc:        string;
+  financialSummary:   string;
+  totalPrincipal:     string;
+  totalInterestPaid:  string;
 
   // Summary labels
   summaryPrincipal:   string;

@@ -45,3 +45,4 @@ skill.md
 
 jest.config.ts
 jest.setup.ts
+/src/generated/prisma

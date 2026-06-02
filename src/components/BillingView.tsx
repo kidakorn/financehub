@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { useTogglePaid } from '@/store/useAppStore';
+import { togglePaidAction } from '@/actions/carActions';
 import { useToast } from '@/components/Toast';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -29,19 +29,22 @@ const PAGE_SIZE  = 12;
 type FilterKey   = 'all' | 'paid' | 'pending';
 
 export default function BillingView({ car, lang, dict, onBack }: BillingViewProps) {
-  const togglePaid  = useTogglePaid();
   const { toast }   = useToast();
   const [page, setPage]         = useState(1);
   const [filter, setFilter]     = useState<FilterKey>('all');
   const stats = getCarStats(car);
 
-  const handleToggle = (instId: string, currentPaid: boolean) => {
-    togglePaid(car.id, instId);
-    toast(
-      currentPaid ? dict.toastPaidOff : dict.toastPaidOn,
-      currentPaid ? 'info' : 'success',
-      2500,
-    );
+  const handleToggle = async (instId: string, currentPaid: boolean) => {
+    try {
+      await togglePaidAction(car.id, instId);
+      toast(
+        currentPaid ? dict.toastPaidOff : dict.toastPaidOn,
+        currentPaid ? 'info' : 'success',
+        2500,
+      );
+    } catch (e) {
+      toast('Failed to update status', 'error');
+    }
   };
 
   const filtered = useMemo(() => {

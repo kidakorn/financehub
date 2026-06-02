@@ -12,6 +12,8 @@ describe('calculateLoan', () => {
         annualRate: '5',
         termMonths: '60',
         startDate: '2023-01-01',
+        ppi: '0',
+        includeVat: true,
       };
 
       const car = buildCar(input);
@@ -43,6 +45,8 @@ describe('calculateLoan', () => {
         annualRate: '5',
         termMonths: '60',
         startDate: '2023-01-01',
+        ppi: '0',
+        includeVat: true,
       };
 
       const car = buildCar(input);
@@ -58,6 +62,8 @@ describe('calculateLoan', () => {
         annualRate: '5',
         termMonths: '60',
         startDate: '2023-01-01',
+        ppi: '0',
+        includeVat: true,
       };
 
       const car = buildCar(input);
@@ -75,6 +81,8 @@ describe('calculateLoan', () => {
         annualRate: '0', // 0 interest to make math easy
         termMonths: '10',
         startDate: '2023-01-01',
+        ppi: '0',
+        includeVat: true,
       };
 
       const car = buildCar(input)!;

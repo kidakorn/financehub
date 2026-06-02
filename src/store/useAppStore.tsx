@@ -55,19 +55,14 @@ if (mockCar1) {
 if (mockCar2) {
   mockCar2.schedule[0].isPaid = true;
 }
-if (mockMoto) {
-  mockMoto.schedule[0].isPaid = true;
-  mockMoto.schedule[1].isPaid = true;
-  mockMoto.schedule[2].isPaid = true;
-}
-
 /* ─── Initial State ─────────────────────────────────────────────────────────── */
 const INITIAL_STATE: AppState = {
-  cars: [],
-  lang: 'th',
+  cars:     [],
+  lang:     'th',
+  userName: null,
 };
 
-const STORAGE_KEY = 'devadrive-v1';
+const STORAGE_KEY = 'devadrive-lang';
 
 /* ─── Reducer ───────────────────────────────────────────────────────────────── */
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -121,43 +116,41 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 /* ─── Provider ──────────────────────────────────────────────────────────────── */
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ children, initialCars, userName }: { children: ReactNode, initialCars?: Car[], userName?: string | null }) {
   const [isMounted, setIsMounted] = useState(false);
-  const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(appReducer, { ...INITIAL_STATE, cars: initialCars || [], userName: userName || null });
+
+  // Sync server data to client state when it changes (due to revalidatePath)
+  useEffect(() => {
+    if (initialCars) {
+      dispatch({ type: 'HYDRATE_STATE', payload: { ...state, cars: initialCars, userName: userName || null } });
+    }
+  }, [initialCars, userName]);
 
   useEffect(() => {
     setIsMounted(true);
-    
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.cars)) {
-          dispatch({ type: 'HYDRATE_STATE', payload: parsed });
-          return;
+        if (parsed && typeof parsed.lang === 'string') {
+          dispatch({ type: 'HYDRATE_STATE', payload: { ...state, lang: parsed.lang, cars: initialCars || [], userName: userName || null } });
         }
       }
     } catch {
       // ignore
     }
-
-    // Fallback UI Stress Test Mock Injection
-    const mockState: AppState = {
-      cars: [mockCar1!, mockCar2!, mockMoto!].filter(Boolean),
-      lang: 'th',
-    };
-    dispatch({ type: 'HYDRATE_STATE', payload: mockState });
   }, []);
 
-  // Save changes to localStorage after mounting
+  // Save lang preference to localStorage after mounting
   useEffect(() => {
     if (!isMounted) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ lang: state.lang }));
     } catch {
       /* quota exceeded — ignore */
     }
-  }, [state, isMounted]);
+  }, [state.lang, isMounted]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

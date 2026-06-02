@@ -3,7 +3,7 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import type { Car, CarFormInput, Dictionary, Lang } from '@/types/index';
 import { buildCar } from '@/lib/calculateLoan';
-import { useAddCar, useUpdateCar } from '@/store/useAppStore';
+import { addCarAction, updateCarAction } from '@/actions/carActions';
 
 import {
   Dialog,
@@ -63,11 +63,10 @@ export default function AddCarModal({
 }: VehicleModalProps) {
   const isTh     = lang === 'th';
   const isEdit   = !!editCar;
-  const addCar   = useAddCar();
-  const updateCar = useUpdateCar();
 
   const [form,  setForm]  = useState<CarFormInput>(EMPTY);
   const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
   /* Pre-fill form when editing */
   useEffect(() => {
@@ -111,26 +110,24 @@ export default function AddCarModal({
       return;
     }
 
-    if (isEdit && editCar) {
-      /* Preserve the original id, createdAt, and any isPaid flags on matching installments */
-      const preserved = {
-        ...built,
-        id:        editCar.id,
-        createdAt: editCar.createdAt,
-        schedule:  built.schedule.map((inst, idx) => ({
-          ...inst,
-          id:     `${editCar.id}-${inst.no}`,
-          isPaid: editCar.schedule[idx]?.isPaid ?? false,
-        })),
-      };
-      updateCar(preserved);
-      onSaved?.('edit');
-    } else {
-      addCar(built);
-      onSaved?.('add');
-    }
-
-    onClose();
+    const submitData = async () => {
+      setIsPending(true);
+      try {
+        if (isEdit && editCar) {
+          await updateCarAction(editCar.id, form);
+          onSaved?.('edit');
+        } else {
+          await addCarAction(form);
+          onSaved?.('add');
+        }
+        onClose();
+      } catch (err: any) {
+        setError(err.message || 'Something went wrong');
+      } finally {
+        setIsPending(false);
+      }
+    };
+    submitData();
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -297,11 +294,11 @@ export default function AddCarModal({
 
           {/* Actions */}
           <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end bg-gray-50/50">
-            <Button type="button" variant="ghost" onClick={onClose} className="flex-1 sm:flex-none">
+            <Button type="button" variant="ghost" onClick={onClose} className="flex-1 sm:flex-none" disabled={isPending}>
               {dict.btnCancel}
             </Button>
-            <Button type="submit" id="btn-modal-save" className="flex-1 sm:flex-none">
-              {isEdit ? dict.modalTitleEdit : dict.btnSave}
+            <Button type="submit" className="flex-1 sm:flex-none" disabled={isPending}>
+              {isPending ? 'Saving...' : dict.btnSave}
             </Button>
           </div>
         </form>
