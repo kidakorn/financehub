@@ -9,5 +9,5 @@ export default async function Page() {
   
   const cars = await getCars();
   
-  return <DashboardClient initialCars={cars} userName={session.user?.name} />;
+  return <DashboardClient initialCars={cars} userName={session.user?.name} userImage={session.user?.image} />;
 }

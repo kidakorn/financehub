@@ -1,7 +1,7 @@
 import type { Lang, Dictionary } from '@/types/index';
 
 const TH: Dictionary = {
-  appName:            'DevaDrive',
+  appName:            'Financial Hub',
   appSubtitle:        'ระบบจัดการสินเชื่อยานพาหนะ',
   brandTag:           'Devakorn',
 
@@ -118,12 +118,12 @@ const TH: Dictionary = {
   detailMonthlyTotal: 'ยอดผ่อนชำระสุทธิต่อเดือน',
   detailStartDate:    'วันที่เริ่มสัญญา',
 
-  footerCopy:         'DevaDrive · Powered by Devakorn',
+  footerCopy:         'Financial Hub · Powered by Devakorn',
   footerNote:         'คำนวณด้วย Flat Rate + VAT 7%',
 };
 
 const EN: Dictionary = {
-  appName:            'DevaDrive',
+  appName:            'Financial Hub',
   appSubtitle:        'Vehicle Loan Management',
   brandTag:           'Devakorn',
 
@@ -240,7 +240,7 @@ const EN: Dictionary = {
   detailMonthlyTotal: 'Total Monthly Payment',
   detailStartDate:    'Start Date',
 
-  footerCopy:         'DevaDrive · Powered by Devakorn',
+  footerCopy:         'Financial Hub · Powered by Devakorn',
   footerNote:         'Calculated using Flat Rate + 7% VAT',
 };
 

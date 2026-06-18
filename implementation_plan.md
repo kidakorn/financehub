@@ -1,71 +1,49 @@
-# Personal Finance Planner Module
+# Platform Restructuring Plan: The Financial Hub
 
-This plan outlines the architecture and implementation steps for adding the new Personal Finance Planner module to DevaDrive.
+This plan outlines how to architecturally transform the application from a "vehicle tracking app with a finance tab" into a **unified Financial Planning Platform** containing two distinct, equal-tier modules.
 
-## Proposed Changes
+## Proposed Architecture: Two-Tier Navigation
 
----
+Instead of having 5 flat tabs (Dashboard, Payments, Fleet, Reports, Finance) all competing for space, we will introduce a **Two-Tier Navigation System**.
 
-### Database Schema
+### Level 1: The Main Module Switcher (Top Header)
+We will redesign the top-left of the header or add a primary segmented control in the center to toggle between the two massive pillars of the application:
+1. **Module A (Formerly DevaDrive)**: Dedicated entirely to Auto Loans & Fleet tracking.
+2. **Module B (Formerly Finance)**: Dedicated entirely to Personal Income & Expense planning.
 
-#### [MODIFY] [schema.prisma](file:///d:/Coding/DEVAKORN/DriveDebt/prisma/schema.prisma)
-Add the following models:
-- `IncomeSource`: Links to `User`. Fields: `name`, `estimatedAmount`, `payday` (String "YYYY-MM-DD"), `shiftWeekend` (Boolean).
-- `MonthlyIncome`: Tracks actuals for a specific month. Links to `IncomeSource`. Fields: `month` (String YYYY-MM), `actualAmount`, `isConfirmed`.
-- `PlannedExpense`: Links to `User`. Fields: `name`, `category` (enum: fixed, one-time, savings), `amount`, `expectedDate` (String "YYYY-MM-DD"), `month` (String YYYY-MM).
-
----
-
-### Backend Logic
-
-#### [NEW] [financeActions.ts](file:///d:/Coding/DEVAKORN/DriveDebt/src/actions/financeActions.ts)
-Server Actions to handle mutations:
-- `getFinanceData(month)`: Fetches income, expenses, and automatically fetches DevaDrive car installments for the user to include as read-only expenses.
-- `addIncomeSource(data)`
-- `confirmMonthlyIncome(id, actualAmount)`
-- `addPlannedExpense(data)`
-
-#### [NEW] [financeUtils.ts](file:///d:/Coding/DEVAKORN/DriveDebt/src/lib/financeUtils.ts)
-Utility functions:
-- `calculateNextPayday(date, shiftWeekend)`: Shifts Saturday/Sunday paydays to Friday if configured.
-- `generateTimeline(incomes, expenses)`: Merges incomes and expenses into a single chronological timeline for the month. **Flags any day where cumulative expenses before the next payday exceed the current confirmed income as "at risk".**
+### Level 2: The Sub-Navigation (Secondary Bar)
+Depending on which Level 1 module is active, the sub-navigation will change:
+- **If Module A is active**, the sub-tabs will be: `Dashboard` | `Payments` | `Fleet` | `Reports`
+- **If Module B is active**, the sub-navigation can be empty (since everything currently fits on one screen), or we can break it out into `Overview` | `Income` | `Expenses`.
 
 ---
 
-### UI Components
+## Open Questions for You
 
-#### [NEW] [FinanceTab.tsx](file:///d:/Coding/DEVAKORN/DriveDebt/src/components/FinanceTab.tsx)
-The main container for the Finance module. It will render:
-- **Summary Header**: Total Income, Total Expenses (including car loans), Remaining Balance, Savings Target.
-- **Income Section**: List of income sources with a button to "Confirm" this month's actual amount.
-- **Expenses Section**: Categorized list of planned expenses (Fixed, One-time, Savings) + imported Car Loans.
-- **Timeline View**: A chronological timeline visualizing cash flow and highlighting days where balance might go negative or is flagged as "at risk".
+Before I write the code to restructure the UI, I need your input on naming to ensure the branding is perfect:
 
-#### [NEW] [AddIncomeModal.tsx](file:///d:/Coding/DEVAKORN/DriveDebt/src/components/AddIncomeModal.tsx)
-Form to add a new income source with a calendar date picker for the payday.
-
-#### [NEW] [AddExpenseModal.tsx](file:///d:/Coding/DEVAKORN/DriveDebt/src/components/AddExpenseModal.tsx)
-Form to add a planned expense with category selection and a calendar date picker.
-
-#### [NEW] [FinanceDictionary.ts](file:///d:/Coding/DEVAKORN/DriveDebt/src/i18n/financeDict.ts)
-A localized dictionary (TH/EN) specifically for the finance module to avoid touching the main `dictionary.ts`.
+> [!IMPORTANT]
+> 1. **Overall Platform Name:** If "DevaDrive" is going to become just a sub-module, what do you want to call the entire website now? (e.g., "Devakorn Wealth", "DevaFinance", "MyFinancialHub")
+> 2. **Module A Name:** What do you want to rename the "DaveDrive / Fleet Management" section to? (e.g., "Auto Loans", "Vehicle Finance", "DriveDebt")
+> 3. **Module B Name:** What do you want to rename the "Finance" section to? (e.g., "Personal Budget", "Cash Flow", "Finance Planner")
 
 ---
 
-### Integration / Routing
+## Technical Implementation Steps
 
-#### [MODIFY] [DashboardClient.tsx](file:///d:/Coding/DEVAKORN/DriveDebt/src/components/DashboardClient.tsx)
-- Add `'finance'` to the `TabID` type.
-- Add the "Finance" tab to the Header navigation.
-- Render `<FinanceTab />` when the active tab is `'finance'`.
+Once you provide the names, I will execute the following:
 
-## Verification Plan
+### 1. Update State Management
+- Modify `DashboardClient.tsx` state to track `activeModule: 'auto' | 'finance'`.
+- Move the `activeTab` state to represent only the sub-tabs of the auto module (`'dashboard' | 'payments' | 'fleet' | 'reports'`).
 
-### Automated Checks
-- `npx prisma generate` and `npx prisma db push` to verify schema validity.
-- `npm run build` to ensure type safety across the new feature.
+### 2. Redesign the Header
+- Modify `src/components/DashboardClient.tsx`'s `<Header />` component.
+- Add a visual module switcher (like a sleek pill toggle or a dropdown if on mobile).
+- Render a secondary tab bar directly underneath the header (or integrated cleanly) that displays the sub-tabs based on the selected module.
 
-### Manual Verification
-1. Add an income source falling on a weekend to verify the "shift to Friday" logic.
-2. Add a car loan in DevaDrive, then open the Finance tab to verify it appears in the expenses list automatically.
-3. Verify the timeline correctly identifies an "at risk" negative cash flow day if a large expense occurs before a confirmed payday.
+### 3. Update Dictionaries
+- Update `src/i18n/dictionary.ts` and `src/i18n/financeDict.ts` with the new branding names you choose.
+
+### 4. Layout Persistence
+- Ensure that switching between the two main modules feels seamless without losing the sub-tab states.

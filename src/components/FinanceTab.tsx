@@ -81,8 +81,9 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
   }
 
   return (
-    <div className="anim-up space-y-6">
-      {/* ── SUMMARY HEADER ── */}
+    <>
+      <div className="anim-up space-y-6">
+        {/* ── SUMMARY HEADER ── */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
         <h2 className="text-lg font-bold text-gray-900 mb-4">{dict.summaryTitle} ({currentMonth})</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -227,9 +228,10 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
           </div>
         </div>
       </div>
+      </div>
 
       <AddIncomeModal isOpen={incomeModal} onClose={() => setIncomeModal(false)} dict={dict} onSaved={loadData} />
       <AddExpenseModal isOpen={expenseModal} onClose={() => setExpenseModal(false)} dict={dict} month={currentMonth} onSaved={loadData} />
-    </div>
+    </>
   );
 }

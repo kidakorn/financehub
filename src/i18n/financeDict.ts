@@ -32,7 +32,7 @@ export interface FinanceDictionary {
 }
 
 export const financeDictEn: FinanceDictionary = {
-  tabFinance: 'Finance',
+  tabFinance: 'Personal Budget',
   summaryTitle: 'Monthly Overview',
   totalIncome: 'Total Income',
   totalExpenses: 'Committed Expenses',
@@ -49,7 +49,7 @@ export const financeDictEn: FinanceDictionary = {
   expenseCategoryFixed: 'Fixed Bill',
   expenseCategoryOneTime: 'One-time',
   expenseCategorySavings: 'Savings Goal',
-  carLoanImport: 'Auto-imported from DevaDrive',
+  carLoanImport: 'Auto-imported from Fleet Manager',
   noData: 'No data yet.',
   modalAddIncomeTitle: 'New Income Source',
   modalAddExpenseTitle: 'New Planned Expense',
@@ -65,7 +65,7 @@ export const financeDictEn: FinanceDictionary = {
 };
 
 export const financeDictTh: FinanceDictionary = {
-  tabFinance: 'การเงิน',
+  tabFinance: 'งบประมาณส่วนบุคคล',
   summaryTitle: 'ภาพรวมรายเดือน',
   totalIncome: 'รายได้รวม',
   totalExpenses: 'รายจ่ายประจำ',
@@ -82,7 +82,7 @@ export const financeDictTh: FinanceDictionary = {
   expenseCategoryFixed: 'ค่าใช้จ่ายคงที่',
   expenseCategoryOneTime: 'จ่ายครั้งเดียว',
   expenseCategorySavings: 'เป้าหมายออมเงิน',
-  carLoanImport: 'นำเข้าอัตโนมัติจาก DevaDrive',
+  carLoanImport: 'นำเข้าอัตโนมัติจาก Fleet Manager',
   noData: 'ยังไม่มีข้อมูล',
   modalAddIncomeTitle: 'แหล่งรายได้ใหม่',
   modalAddExpenseTitle: 'เพิ่มรายจ่ายที่วางแผนไว้',

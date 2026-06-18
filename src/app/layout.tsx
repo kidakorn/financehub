@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title:       'DevaDrive — Car Loan Management',
-  description: 'ระบบติดตามสินเชื่อรถยนต์หลายคัน พร้อมตารางผ่อนชำระรายงวดและสถานะการชำระ | Multi-car loan tracker with installment billing management.',
-  keywords:    ['car loan', 'สินเชื่อรถยนต์', 'ผ่อนรถ', 'devakorn', 'flat rate', 'installment tracker'],
+  title:       'Financial Hub',
+  description: 'Manage your personal budget and fleet loans in one unified hub. Track cash flow, expenses, and vehicle installments seamlessly.',
+  keywords:    ['financial hub', 'personal budget', 'fleet manager', 'car loan', 'cash flow', 'devakorn'],
   authors:     [{ name: 'Devakorn' }],
   robots:      'index, follow',
 };
