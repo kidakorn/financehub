@@ -1,5 +1,11 @@
 export interface FinanceDictionary {
   tabFinance: string;
+  navPlanner: string;
+  navCalendar: string;
+  navAnalytics: string;
+  btnEdit: string;
+  confirmDelete: string;
+  btnDeleteCar: string;
   summaryTitle: string;
   totalIncome: string;
   totalExpenses: string;
@@ -33,6 +39,12 @@ export interface FinanceDictionary {
 
 export const financeDictEn: FinanceDictionary = {
   tabFinance: 'Personal Budget',
+  navPlanner: 'Planner',
+  navCalendar: 'Calendar',
+  navAnalytics: 'Analytics',
+  btnEdit: 'Edit',
+  confirmDelete: 'Are you sure?',
+  btnDeleteCar: 'Delete',
   summaryTitle: 'Monthly Overview',
   totalIncome: 'Total Income',
   totalExpenses: 'Committed Expenses',
@@ -66,6 +78,12 @@ export const financeDictEn: FinanceDictionary = {
 
 export const financeDictTh: FinanceDictionary = {
   tabFinance: 'งบประมาณส่วนบุคคล',
+  navPlanner: 'วางแผน',
+  navCalendar: 'ปฏิทิน',
+  navAnalytics: 'สถิติ',
+  btnEdit: 'แก้ไข',
+  confirmDelete: 'ยืนยันการลบ?',
+  btnDeleteCar: 'ลบ',
   summaryTitle: 'ภาพรวมรายเดือน',
   totalIncome: 'รายได้รวม',
   totalExpenses: 'รายจ่ายประจำ',

@@ -10,7 +10,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 60 * 60, // 1 hour
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID || "",

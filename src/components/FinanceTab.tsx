@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { getFinanceData, confirmMonthlyIncome } from '@/actions/financeActions';
+import { getFinanceData, confirmMonthlyIncome, deleteIncomeSource, deletePlannedExpense } from '@/actions/financeActions';
 import { generateTimeline } from '@/lib/financeUtils';
 import type { TimelineEvent } from '@/lib/financeUtils';
 import { financeDictEn, financeDictTh } from '@/i18n/financeDict';
@@ -11,8 +11,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AddIncomeModal from '@/components/AddIncomeModal';
 import AddExpenseModal from '@/components/AddExpenseModal';
+import FinanceCalendar from '@/components/FinanceCalendar';
+import FinanceAnalytics from '@/components/FinanceAnalytics';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
-export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
+export default function FinanceTab({ lang, activeTab }: { lang: 'th' | 'en', activeTab: 'planner' | 'calendar' | 'analytics' }) {
   const dict: FinanceDictionary = lang === 'th' ? financeDictTh : financeDictEn;
   
   const [data, setData] = useState<{ incomes: any[], expenses: any[], cars: any[] } | null>(null);
@@ -20,6 +23,13 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
 
   const [incomeModal, setIncomeModal] = useState(false);
   const [expenseModal, setExpenseModal] = useState(false);
+  
+  const [editIncome, setEditIncome] = useState<any>(null);
+  const [editExpense, setEditExpense] = useState<any>(null);
+  
+  const [deleteIncomeData, setDeleteIncomeData] = useState<any>(null);
+  const [deleteExpenseData, setDeleteExpenseData] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Use current month
   const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
@@ -33,6 +43,24 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
       console.error(e);
     }
     setLoading(false);
+  };
+
+  const handleDeleteIncome = async () => {
+    if (!deleteIncomeData) return;
+    setIsDeleting(true);
+    await deleteIncomeSource(deleteIncomeData.id);
+    setDeleteIncomeData(null);
+    setIsDeleting(false);
+    loadData();
+  };
+
+  const handleDeleteExpense = async () => {
+    if (!deleteExpenseData) return;
+    setIsDeleting(true);
+    await deletePlannedExpense(deleteExpenseData.id);
+    setDeleteExpenseData(null);
+    setIsDeleting(false);
+    loadData();
   };
 
   useEffect(() => {
@@ -82,8 +110,9 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
 
   return (
     <>
-      <div className="anim-up space-y-6">
-        {/* ── SUMMARY HEADER ── */}
+      <div style={{ display: activeTab === 'planner' ? 'block' : 'none' }}>
+        <div className="anim-up space-y-6">
+          {/* ── SUMMARY HEADER ── */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
         <h2 className="text-lg font-bold text-gray-900 mb-4">{dict.summaryTitle} ({currentMonth})</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -137,6 +166,14 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
                             : <span className="text-[10px] font-bold text-amber-500 uppercase">{dict.lblEstimated}</span>
                           }
                         </div>
+                        <div className="flex items-center gap-1 border-l border-gray-200 pl-2">
+                          <button onClick={() => setEditIncome(inc)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Edit">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                          </button>
+                          <button onClick={() => setDeleteIncomeData(inc)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Delete">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                          </button>
+                        </div>
                         {!confirmed && (
                           <Button size="sm" variant="outline" onClick={() => handleConfirmIncome(inc.id, amount)} className="h-7 text-xs px-2">
                             {dict.btnConfirm}
@@ -164,7 +201,17 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
                     <p className="font-semibold text-gray-900 text-sm">{exp.name}</p>
                     <Badge variant="outline" className="mt-1 text-[10px] h-4 leading-none bg-gray-50">{exp.category}</Badge>
                   </div>
-                  <p className="font-bold text-gray-900">฿{formatTHB(exp.amount)}</p>
+                  <div className="flex items-center gap-4">
+                    <p className="font-bold text-gray-900">฿{formatTHB(exp.amount)}</p>
+                    <div className="flex items-center gap-1 border-l border-gray-200 pl-2">
+                      <button onClick={() => setEditExpense(exp)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Edit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                      </button>
+                      <button onClick={() => setDeleteExpenseData(exp)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
 
@@ -227,11 +274,59 @@ export default function FinanceTab({ lang }: { lang: 'th' | 'en' }) {
             )}
           </div>
         </div>
+        </div>
       </div>
       </div>
 
-      <AddIncomeModal isOpen={incomeModal} onClose={() => setIncomeModal(false)} dict={dict} onSaved={loadData} />
-      <AddExpenseModal isOpen={expenseModal} onClose={() => setExpenseModal(false)} dict={dict} month={currentMonth} onSaved={loadData} />
+      {activeTab === 'calendar' && (
+        <FinanceCalendar timeline={timeline} currentMonth={currentMonth} dict={dict} />
+      )}
+
+      {activeTab === 'analytics' && (
+        <FinanceAnalytics data={data} summary={summary} dict={dict} currentMonth={currentMonth} />
+      )}
+
+      {/* MODALS */}
+      <AddIncomeModal 
+        isOpen={incomeModal || !!editIncome} 
+        onClose={() => { setIncomeModal(false); setEditIncome(null); }} 
+        dict={dict} 
+        onSaved={loadData}
+        editData={editIncome}
+      />
+      <AddExpenseModal 
+        isOpen={expenseModal || !!editExpense} 
+        onClose={() => { setExpenseModal(false); setEditExpense(null); }} 
+        dict={dict} 
+        month={currentMonth} 
+        onSaved={loadData}
+        editData={editExpense}
+      />
+      
+      {/* CONFIRM DELETE DIALOGS */}
+      <ConfirmDialog
+        open={!!deleteIncomeData}
+        title={dict.confirmDelete}
+        message={`Delete "${deleteIncomeData?.name}"?`}
+        confirmLabel={dict.btnDeleteCar}
+        cancelLabel={dict.btnCancel}
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteIncome}
+        onCancel={() => setDeleteIncomeData(null)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteExpenseData}
+        title={dict.confirmDelete}
+        message={`Delete "${deleteExpenseData?.name}"?`}
+        confirmLabel={dict.btnDeleteCar}
+        cancelLabel={dict.btnCancel}
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteExpense}
+        onCancel={() => setDeleteExpenseData(null)}
+      />
     </>
   );
 }

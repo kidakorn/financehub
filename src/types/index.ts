@@ -86,6 +86,9 @@ export interface Dictionary {
   navPayments:        string;
   navFleet:           string;
   navReports:         string;
+  navPlanner?:        string;
+  navCalendar?:       string;
+  navAnalytics?:      string;
   roleFleetManager:   string;
   exportCSV:          string;
   toastExported:      string;

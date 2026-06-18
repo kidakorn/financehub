@@ -115,3 +115,65 @@ export async function addPlannedExpense(data: {
 
   revalidatePath('/');
 }
+
+export async function updateIncomeSource(id: string, data: {
+  name: string;
+  estimatedAmount: number;
+  payday: string;
+  shiftWeekend: boolean;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error('Unauthorized');
+  
+  await db.incomeSource.updateMany({
+    where: { id, userId: session.user.id },
+    data: {
+      name: data.name,
+      estimatedAmount: data.estimatedAmount,
+      payday: data.payday,
+      shiftWeekend: data.shiftWeekend,
+    },
+  });
+  revalidatePath('/');
+}
+
+export async function deleteIncomeSource(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error('Unauthorized');
+  
+  await db.incomeSource.deleteMany({
+    where: { id, userId: session.user.id },
+  });
+  revalidatePath('/');
+}
+
+export async function updatePlannedExpense(id: string, data: {
+  name: string;
+  category: string;
+  amount: number;
+  expectedDate: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error('Unauthorized');
+
+  await db.plannedExpense.updateMany({
+    where: { id, userId: session.user.id },
+    data: {
+      name: data.name,
+      category: data.category,
+      amount: data.amount,
+      expectedDate: data.expectedDate,
+    },
+  });
+  revalidatePath('/');
+}
+
+export async function deletePlannedExpense(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error('Unauthorized');
+  
+  await db.plannedExpense.deleteMany({
+    where: { id, userId: session.user.id },
+  });
+  revalidatePath('/');
+}

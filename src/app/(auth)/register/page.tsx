@@ -11,18 +11,19 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-blue-600">
-            <path d="M5 15l2-8h10l2 8v4h-2v-2H7v2H5v-4zm2-6l-1 4h12l-1-4H7zm2 6a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/>
+        <div className="flex items-center justify-center gap-2.5 mb-8">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+            <path d="M22 12A10 10 0 0 0 12 2v10z" />
           </svg>
-          <span className="text-2xl font-bold text-gray-900 tracking-tight">DevaDrive</span>
+          <span className="text-2xl font-bold text-gray-900 tracking-tight mt-0.5">Financial Hub</span>
         </div>
 
         {/* Card */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Create an account</h1>
-            <p className="text-sm text-gray-500 mt-1">Track your vehicle loan payments in one place</p>
+            <p className="text-sm text-gray-500 mt-2">Create an account to manage your finances</p>
           </div>
 
           {/* Global error */}

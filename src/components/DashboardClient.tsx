@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useTransition } from 'react';
+import { useState, useMemo, useTransition, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useApp, useDeleteCar, useSetLang, useDict, AppProvider } from '@/store/useAppStore';
 import { getCarStats } from '@/lib/calculateLoan';
@@ -45,19 +45,50 @@ import {
 } from '@/components/ui/table';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
+/* ─── Realtime Clock ───────────────────────────────────────────────────────── */
+
+function RealtimeClock({ lang }: { lang: Lang }) {
+  const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setTime(new Date());
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  if (!time) return <div className="hidden sm:block w-24 h-8 border-r border-gray-200 mr-3 pr-3" />;
+
+  const dateStr = time.toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+  });
+  const timeStr = time.toLocaleTimeString(lang === 'th' ? 'th-TH' : 'en-US', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+
+  return (
+    <div className="hidden sm:flex flex-col items-end text-right pr-3 mr-1 border-r border-gray-200 justify-center">
+      <span className="text-sm font-bold text-gray-900 leading-none">{timeStr}</span>
+      <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-0.5">{dateStr}</span>
+    </div>
+  );
+}
+
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 
 type ModuleID = 'fleet' | 'budget';
 type FleetTabID = 'dashboard' | 'payments' | 'fleet' | 'reports';
+type BudgetTabID = 'planner' | 'calendar' | 'analytics';
 
 function Header({ 
   lang, setLang, userName, userImage, dict, 
   activeModule, setActiveModule,
-  activeFleetTab, setActiveFleetTab 
+  activeFleetTab, setActiveFleetTab,
+  activeBudgetTab, setActiveBudgetTab
 }: { 
   lang: Lang; setLang: (l: Lang) => void; userName?: string | null; userImage?: string | null; dict: Dictionary;
   activeModule: ModuleID; setActiveModule: (m: ModuleID) => void;
   activeFleetTab: FleetTabID; setActiveFleetTab: (t: FleetTabID) => void;
+  activeBudgetTab: BudgetTabID; setActiveBudgetTab: (t: BudgetTabID) => void;
 }) {
   const [loggingOut, startLogout] = useTransition();
   return (
@@ -91,14 +122,16 @@ function Header({
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <RealtimeClock lang={lang} />
+          
           <button
             onClick={() => setLang(lang === 'th' ? 'en' : 'th')}
             className="text-xs font-bold uppercase text-gray-500 hover:text-gray-900 px-2 py-1 rounded transition-colors"
           >
             {lang === 'th' ? 'EN' : 'TH'}
           </button>
-          <div className="flex items-center gap-2 border-l border-gray-200 pl-3">
+          <div className="flex items-center gap-2 pl-1">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-gray-900 leading-none">{userName ?? 'User'}</p>
               <p className="text-xs text-gray-500 mt-0.5">{dict.appName}</p>
@@ -151,6 +184,33 @@ function Header({
               <span 
                 key={tab}
                 onClick={() => setActiveFleetTab(tab)}
+                className={`text-sm h-full flex items-center cursor-pointer transition-colors border-b-2 flex-shrink-0 whitespace-nowrap ${
+                  isActive 
+                    ? 'font-bold text-gray-900 border-blue-600' 
+                    : 'font-medium text-gray-500 border-transparent hover:text-gray-900'
+                }`}
+              >
+                {label}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Level 2: Sub-Nav for Personal Budget */}
+      {activeModule === 'budget' && (
+        <div className="main-container px-4 sm:px-6 flex items-center overflow-x-auto h-12 gap-6 bg-white hide-scrollbar border-t border-gray-100">
+          {(['planner', 'calendar', 'analytics'] as BudgetTabID[]).map((tab) => {
+            const isActive = activeBudgetTab === tab;
+            let label = '';
+            if (tab === 'planner') label = (dict as any).navPlanner || 'Planner';
+            if (tab === 'calendar') label = (dict as any).navCalendar || 'Calendar';
+            if (tab === 'analytics') label = (dict as any).navAnalytics || 'Analytics';
+            
+            return (
+              <span 
+                key={tab}
+                onClick={() => setActiveBudgetTab(tab)}
                 className={`text-sm h-full flex items-center cursor-pointer transition-colors border-b-2 flex-shrink-0 whitespace-nowrap ${
                   isActive 
                     ? 'font-bold text-gray-900 border-blue-600' 
@@ -479,6 +539,7 @@ function AppInner({ userImage }: { userImage?: string | null }) {
 
   const [activeModule, setActiveModule] = useState<ModuleID>('budget');
   const [activeFleetTab, setActiveFleetTab] = useState<FleetTabID>('dashboard');
+  const [activeBudgetTab, setActiveBudgetTab] = useState<BudgetTabID>('planner');
   const [modal, setModal] = useState(false);
   const [editCar, setEditCar] = useState<Car | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
@@ -509,6 +570,8 @@ function AppInner({ userImage }: { userImage?: string | null }) {
         setActiveModule={setActiveModule}
         activeFleetTab={activeFleetTab} 
         setActiveFleetTab={setActiveFleetTab} 
+        activeBudgetTab={activeBudgetTab}
+        setActiveBudgetTab={setActiveBudgetTab}
       />
 
       <main className="main-container w-full px-3 sm:px-6 py-6 sm:py-8 flex-1">
@@ -528,7 +591,7 @@ function AppInner({ userImage }: { userImage?: string | null }) {
         )}
 
         {activeModule === 'budget' && (
-          <FinanceTab lang={state.lang} />
+          <FinanceTab lang={state.lang} activeTab={activeBudgetTab} />
         )}
 
         {/* Slide-over detail panel (used across tabs if we select a car) */}
