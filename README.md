@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevaDrive (Fleet & Debt Management)
 
-## Getting Started
+DevaDrive is a professional, bilingual (English/Thai) web application designed to help individuals and businesses manage their vehicle fleets and track auto loan debts.
 
-First, run the development server:
+## 🚀 Features
+- **Vehicle Tracking**: Add and manage both cars and motorcycles in your fleet.
+- **Advanced Loan Calculation**: Automatically calculates complex amortization schedules, including down payments, Payment Protection Insurance (PPI), interest rates, and VAT calculations specific to Thai auto leasing.
+- **Installment Management**: Track exactly what is paid and what is pending on a month-to-month basis across all vehicles.
+- **Visual Dashboard**: View total debt, monthly outflows, and interactive charts visualizing your payment schedules over time.
+- **Secure Authentication**: Built with NextAuth.js for secure Google OAuth login.
+- **Bilingual Interface**: Seamlessly switch between English and Thai languages.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠 Tech Stack
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS & Base-UI
+- **Database**: Neon (Serverless Postgres)
+- **ORM**: Prisma (v7 + Neon Adapter)
+- **Authentication**: Stateless Custom JWT (`jose`) + `bcryptjs`
+- **Deployment**: Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💻 Getting Started Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up your `.env.local` file with your Database and Auth keys.
+4. Generate the Prisma client: `npx prisma generate`
+5. Push the database schema: `npx prisma db push`
+6. Run the development server: `npm run dev`

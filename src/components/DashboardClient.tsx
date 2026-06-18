@@ -15,6 +15,7 @@ import { addCarAction, deleteCarAction, togglePaidAction } from '@/actions/carAc
 import DashboardOverview from '@/components/DashboardOverview';
 import PaymentsTab from '@/components/PaymentsTab';
 import ReportsTab from '@/components/ReportsTab';
+import FinanceTab from '@/components/FinanceTab';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +27,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 
-type TabID = 'dashboard' | 'payments' | 'fleet' | 'reports';
+type TabID = 'dashboard' | 'payments' | 'fleet' | 'reports' | 'finance';
 
 function Header({ lang, setLang, userName, dict, activeTab, setActiveTab }: { lang: Lang; setLang: (l: Lang) => void; userName?: string | null; dict: Dictionary, activeTab: TabID, setActiveTab: (t: TabID) => void }) {
   const [loggingOut, startLogout] = useTransition();
@@ -43,13 +44,14 @@ function Header({ lang, setLang, userName, dict, activeTab, setActiveTab }: { la
 
         {/* Nav — md+ */}
         <nav className="hidden md:flex items-center gap-6 h-full">
-          {(['dashboard', 'payments', 'fleet', 'reports'] as TabID[]).map((tab) => {
+          {(['dashboard', 'payments', 'fleet', 'reports', 'finance'] as TabID[]).map((tab) => {
             const isActive = activeTab === tab;
             let label = '';
             if (tab === 'dashboard') label = dict.navDashboard;
             if (tab === 'payments') label = dict.navPayments;
             if (tab === 'fleet') label = dict.navFleet;
             if (tab === 'reports') label = dict.navReports;
+            if (tab === 'finance') label = lang === 'th' ? 'การเงิน' : 'Finance';
             
             return (
               <span 
@@ -99,13 +101,14 @@ function Header({ lang, setLang, userName, dict, activeTab, setActiveTab }: { la
       
       {/* Mobile Nav */}
       <nav className="md:hidden flex items-center overflow-x-auto px-4 h-12 border-t border-gray-100 gap-6 bg-white hide-scrollbar">
-        {(['dashboard', 'payments', 'fleet', 'reports'] as TabID[]).map((tab) => {
+        {(['dashboard', 'payments', 'fleet', 'reports', 'finance'] as TabID[]).map((tab) => {
           const isActive = activeTab === tab;
           let label = '';
           if (tab === 'dashboard') label = dict.navDashboard;
           if (tab === 'payments') label = dict.navPayments;
           if (tab === 'fleet') label = dict.navFleet;
           if (tab === 'reports') label = dict.navReports;
+          if (tab === 'finance') label = lang === 'th' ? 'การเงิน' : 'Finance';
           
           return (
             <span 
@@ -468,6 +471,9 @@ function AppInner() {
         )}
         {activeTab === 'reports' && (
           <ReportsTab cars={state.cars} dict={dict} lang={state.lang} />
+        )}
+        {activeTab === 'finance' && (
+          <FinanceTab lang={state.lang} />
         )}
         
         {/* We keep the Fleet tab rendering if it's the active tab OR if a car is selected so the slide-over works cleanly */}

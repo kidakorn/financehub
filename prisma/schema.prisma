@@ -27,6 +27,8 @@ model User {
   sessions       Session[]
   Authenticator  Authenticator[]
   cars           Car[]
+  incomeSources  IncomeSource[]
+  plannedExpenses PlannedExpense[]
 }
 
 model Account {
@@ -118,4 +120,49 @@ model Installment {
   isPaid  Boolean @default(false)
 
   @@index([carId])
+}
+
+// ─── Finance Planner ────────────────────────────────────────────────────────
+
+model IncomeSource {
+  id              String          @id @default(cuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name            String
+  estimatedAmount Float
+  payday          String          // "YYYY-MM-DD"
+  shiftWeekend    Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+
+  actuals         MonthlyIncome[]
+
+  @@index([userId])
+}
+
+model MonthlyIncome {
+  id              String        @id @default(cuid())
+  sourceId        String
+  source          IncomeSource  @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  
+  month           String        // "YYYY-MM"
+  actualAmount    Float
+  isConfirmed     Boolean       @default(false)
+
+  @@unique([sourceId, month])
+}
+
+model PlannedExpense {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name            String
+  category        String        // "fixed" | "onetime" | "savings"
+  amount          Float
+  expectedDate    String        // "YYYY-MM-DD"
+  month           String        // "YYYY-MM"
+  createdAt       DateTime      @default(now())
+
+  @@index([userId, month])
 }
