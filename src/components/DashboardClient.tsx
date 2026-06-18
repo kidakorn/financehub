@@ -6,6 +6,7 @@ import { useApp, useDeleteCar, useSetLang, useDict, AppProvider } from '@/store/
 import { getCarStats } from '@/lib/calculateLoan';
 import { formatTHB } from '@/lib/formatters';
 import type { Car, Lang, Dictionary } from '@/types/index';
+import { ThemeToggle } from '@/components/ThemeToggle';
 const VehicleModal = dynamic(() => import('@/components/AddCarModal'), { ssr: false });
 const BillingView = dynamic(() => import('@/components/BillingView'), { ssr: false });
 
@@ -131,6 +132,7 @@ function Header({
           >
             {lang === 'th' ? 'EN' : 'TH'}
           </button>
+          <ThemeToggle />
           <div className="flex items-center gap-2 pl-1">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-gray-900 leading-none">{userName ?? 'User'}</p>
