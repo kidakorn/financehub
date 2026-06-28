@@ -30,6 +30,7 @@ export default function AddExpenseModal({ isOpen, onClose, dict, month, onSaved,
         amount: parseFloat(fd.get('amount') as string),
         expectedDate: fd.get('expectedDate') as string,
         month,
+        endMonth: fd.get('endMonth') as string || null,
       };
 
       if (editData) {
@@ -73,13 +74,20 @@ export default function AddExpenseModal({ isOpen, onClose, dict, month, onSaved,
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">{dict.lblCategory}</label>
-            <select required name="category" defaultValue={editData?.category} className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white">
-              <option value="fixed">{dict.expenseCategoryFixed}</option>
-              <option value="onetime">{dict.expenseCategoryOneTime}</option>
-              <option value="savings">{dict.expenseCategorySavings}</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">{dict.lblCategory}</label>
+              <select required name="category" defaultValue={editData?.category} className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white">
+                <option value="fixed">{dict.expenseCategoryFixed}</option>
+                <option value="onetime">{dict.expenseCategoryOneTime}</option>
+                <option value="savings">{dict.expenseCategorySavings}</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">{dict.lblEndMonth}</label>
+              <input name="endMonth" defaultValue={editData?.endMonth} type="month" className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+              <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{dict.lblEndMonthDesc}</p>
+            </div>
           </div>
 
           <div className="pt-2 flex items-center justify-end gap-2">

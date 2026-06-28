@@ -161,7 +161,8 @@ model PlannedExpense {
   category        String        // "fixed" | "onetime" | "savings"
   amount          Float
   expectedDate    String        // "YYYY-MM-DD"
-  month           String        // "YYYY-MM"
+  month           String        // "YYYY-MM" (Start Month)
+  endMonth        String?       // "YYYY-MM" (Optional End Month for Installments)
   createdAt       DateTime      @default(now())
 
   @@index([userId, month])

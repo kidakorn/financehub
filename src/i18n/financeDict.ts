@@ -33,8 +33,13 @@ export interface FinanceDictionary {
   lblExpenseName: string;
   lblCategory: string;
   lblExpectedDate: string;
+  lblEndMonth: string;
+  lblEndMonthDesc: string;
   btnSave: string;
   btnCancel: string;
+  sortExpectedAsc: string;
+  sortExpectedDesc: string;
+  sortCreatedDesc: string;
 }
 
 export const financeDictEn: FinanceDictionary = {
@@ -72,8 +77,13 @@ export const financeDictEn: FinanceDictionary = {
   lblExpenseName: 'Expense Name',
   lblCategory: 'Category',
   lblExpectedDate: 'Expected Date',
+  lblEndMonth: 'Installment End Month',
+  lblEndMonthDesc: 'Optional. Leave empty if not an installment.',
   btnSave: 'Save',
   btnCancel: 'Cancel',
+  sortExpectedAsc: 'Date (Old - New)',
+  sortExpectedDesc: 'Date (New - Old)',
+  sortCreatedDesc: 'Recently Added',
 };
 
 export const financeDictTh: FinanceDictionary = {
@@ -111,6 +121,11 @@ export const financeDictTh: FinanceDictionary = {
   lblExpenseName: 'ชื่อรายการ',
   lblCategory: 'หมวดหมู่',
   lblExpectedDate: 'วันที่คาดว่าจะจ่าย',
+  lblEndMonth: 'เดือนที่สิ้นสุดผ่อนชำระ',
+  lblEndMonthDesc: 'เลือกได้ เว้นว่างไว้หากไม่ใช่รายการผ่อนชำระ',
   btnSave: 'บันทึก',
   btnCancel: 'ยกเลิก',
+  sortExpectedAsc: 'วันที่ (เก่า-ใหม่)',
+  sortExpectedDesc: 'วันที่ (ใหม่-เก่า)',
+  sortCreatedDesc: 'เพิ่มล่าสุด',
 };

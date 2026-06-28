@@ -30,6 +30,8 @@ export default function FinanceTab({ lang, activeTab }: { lang: 'th' | 'en', act
   const [deleteIncomeData, setDeleteIncomeData] = useState<any>(null);
   const [deleteExpenseData, setDeleteExpenseData] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const [expenseSort, setExpenseSort] = useState<'expected_asc' | 'expected_desc' | 'created_desc'>('expected_asc');
 
   // Use current month
   const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
@@ -75,6 +77,22 @@ export default function FinanceTab({ lang, activeTab }: { lang: 'th' | 'en', act
     
     return generateTimeline(data.incomes, data.expenses, carInstallments, currentMonth);
   }, [data, currentMonth]);
+
+  const sortedExpenses = useMemo(() => {
+    if (!data?.expenses) return [];
+    return [...data.expenses].sort((a, b) => {
+      if (expenseSort === 'expected_asc') {
+        return a.expectedDate.localeCompare(b.expectedDate);
+      }
+      if (expenseSort === 'expected_desc') {
+        return b.expectedDate.localeCompare(a.expectedDate);
+      }
+      if (expenseSort === 'created_desc') {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      return 0;
+    });
+  }, [data?.expenses, expenseSort]);
 
   const summary = useMemo(() => {
     if (!data) return { totalIncome: 0, totalExpenses: 0, remaining: 0 };
@@ -189,17 +207,41 @@ export default function FinanceTab({ lang, activeTab }: { lang: 'th' | 'en', act
 
           {/* EXPENSES */}
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900">{dict.plannedExpenses}</h3>
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div className="flex items-center gap-3">
+                <h3 className="font-bold text-gray-900">{dict.plannedExpenses}</h3>
+                <select 
+                  value={expenseSort} 
+                  onChange={e => setExpenseSort(e.target.value as any)}
+                  className="text-xs border border-gray-200 rounded px-2 py-1 outline-none focus:border-blue-500 bg-gray-50 text-gray-700"
+                >
+                  <option value="expected_asc">{dict.sortExpectedAsc}</option>
+                  <option value="expected_desc">{dict.sortExpectedDesc}</option>
+                  <option value="created_desc">{dict.sortCreatedDesc}</option>
+                </select>
+              </div>
               <Button size="sm" onClick={() => setExpenseModal(true)}>{dict.btnAddExpense}</Button>
             </div>
             
             <div className="space-y-3">
-              {data.expenses.map(exp => (
+              {sortedExpenses.map(exp => (
                 <div key={exp.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100">
                   <div>
                     <p className="font-semibold text-gray-900 text-sm">{exp.name}</p>
-                    <Badge variant="outline" className="mt-1 text-[10px] h-4 leading-none bg-gray-50">{exp.category}</Badge>
+                    <p className="text-[11px] text-gray-500 mt-0.5 mb-1.5">
+                      {dict.lblExpectedDate}: {exp.expectedDate} 
+                      {exp.createdAt && <span className="text-gray-400 ml-2">(Recorded: {new Date(exp.createdAt).toLocaleString(lang === 'th' ? 'th-TH' : 'en-US', { dateStyle: 'short', timeStyle: 'short' })})</span>}
+                    </p>
+                    <div className="flex gap-1.5 items-center">
+                      <Badge variant="outline" className="mt-1 text-[10px] h-4 leading-none bg-gray-50">
+                        {exp.category === 'fixed' ? dict.expenseCategoryFixed : exp.category === 'onetime' ? dict.expenseCategoryOneTime : exp.category === 'savings' ? dict.expenseCategorySavings : exp.category}
+                      </Badge>
+                      {exp.endMonth && (
+                        <Badge variant="outline" className="mt-1 text-[10px] h-4 leading-none bg-blue-50 text-blue-600 border-blue-200">
+                          Ends: {exp.endMonth}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <p className="font-bold text-gray-900">฿{formatTHB(exp.amount)}</p>

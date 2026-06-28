@@ -19,7 +19,14 @@ export async function getFinanceData(month: string) {
       },
     }),
     db.plannedExpense.findMany({
-      where: { userId, month },
+      where: { 
+        userId, 
+        month: { lte: month },
+        OR: [
+          { endMonth: null },
+          { endMonth: { gte: month } }
+        ]
+      },
       orderBy: { expectedDate: 'asc' },
     }),
     db.car.findMany({
@@ -97,6 +104,7 @@ export async function addPlannedExpense(data: {
   amount: number;
   expectedDate: string; // YYYY-MM-DD
   month: string; // YYYY-MM
+  endMonth?: string | null; // YYYY-MM
 }) {
   const session = await auth();
   if (!session?.user?.id) throw new Error('Unauthorized');
@@ -110,6 +118,7 @@ export async function addPlannedExpense(data: {
       amount: data.amount,
       expectedDate: data.expectedDate,
       month: data.month,
+      endMonth: data.endMonth || null,
     },
   });
 
@@ -152,6 +161,7 @@ export async function updatePlannedExpense(id: string, data: {
   category: string;
   amount: number;
   expectedDate: string;
+  endMonth?: string | null;
 }) {
   const session = await auth();
   if (!session?.user?.id) throw new Error('Unauthorized');
@@ -163,6 +173,7 @@ export async function updatePlannedExpense(id: string, data: {
       category: data.category,
       amount: data.amount,
       expectedDate: data.expectedDate,
+      endMonth: data.endMonth || null,
     },
   });
   revalidatePath('/');
